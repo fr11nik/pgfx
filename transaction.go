@@ -23,7 +23,7 @@ type TxManager interface {
 }
 
 // NewTransactionManager создает новый менеджер транзакций, который удовлетворяет интерфейсу db.TxManager
-func NewTransactionManager(db Transactor) TxManager {
+func newTransactionManager(db Transactor) TxManager {
 	return &manager{
 		db: db,
 	}

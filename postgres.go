@@ -30,7 +30,7 @@ type QueryExecutor interface {
 type Postgres struct {
 	Pool *pgxpool.Pool
 	// used for context transactions
-	TransactionalPool QueryExecutor
+	transactionalPool QueryExecutor
 	maxPoolSize       int32
 	connAttempts      int32
 	connTimeout       time.Duration
@@ -82,9 +82,13 @@ func New(connStr string, opts ...Option) (*Postgres, error) {
 		}
 	}
 	transactor := pgTransactor{dbc: pg.Pool}
-	pg.TransactionalPool = transactor
+	pg.transactionalPool = transactor
 
 	return pg, nil
+}
+
+func (p *Postgres) NewTransactionManager() TxManager {
+	return newTransactionManager(p.transactionalPool)
 }
 
 // Close is close postgres pool
