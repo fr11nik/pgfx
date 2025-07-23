@@ -40,6 +40,14 @@ func (p pgTransactor) QueryRow(ctx context.Context, sql string, args ...any) pgx
 	return p.dbc.QueryRow(ctx, sql, args...)
 }
 
+func (p pgTransactor) CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error) {
+	tx, ok := ctx.Value(TxKey).(pgx.Tx)
+	if ok {
+		return tx.CopyFrom(ctx, tableName, columnNames, rowSrc)
+	}
+	return p.dbc.CopyFrom(ctx, tableName, columnNames, rowSrc)
+}
+
 func (p pgTransactor) BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error) {
 	return p.dbc.BeginTx(ctx, txOptions)
 }
