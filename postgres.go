@@ -1,3 +1,4 @@
+// Package pgfx -
 package pgfx
 
 import (
@@ -22,6 +23,7 @@ type QueryExecutor interface {
 	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
 	Query(context.Context, string, ...any) (pgx.Rows, error)
 	QueryRow(context.Context, string, ...any) pgx.Row
+	Transactor
 }
 
 // Postgres -.
@@ -80,7 +82,7 @@ func New(connStr string, opts ...Option) (*Postgres, error) {
 		}
 	}
 	transactor := pgTransactor{dbc: pg.Pool}
-	pg.db = transactor
+	pg.TransactionalPool = transactor
 
 	return pg, nil
 }
