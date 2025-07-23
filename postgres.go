@@ -26,12 +26,13 @@ type QueryExecutor interface {
 
 // Postgres -.
 type Postgres struct {
-	Pool         *pgxpool.Pool
-	db           QueryExecutor
-	maxPoolSize  int32
-	connAttempts int32
-	connTimeout  time.Duration
-	qt           pgx.QueryTracer
+	Pool *pgxpool.Pool
+	// used for context transactions
+	TransactionalPool QueryExecutor
+	maxPoolSize       int32
+	connAttempts      int32
+	connTimeout       time.Duration
+	qt                pgx.QueryTracer
 }
 
 // New create postgres instance
