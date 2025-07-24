@@ -23,7 +23,7 @@ func newTransactionManager(db Transactor) *Manager {
 }
 
 // transaction основная функция, которая выполняет указанный пользователем обработчик в транзакции
-func (m *Manager) transaction(ctx context.Context, opts pgx.TxOptions, fn Handler) (err error) {
+func (m *Manager) transaction(ctx context.Context, opts pgx.TxOptions, fn func(ctx context.Context) error) (err error) {
 	// Если это вложенная транзакция, пропускаем инициацию новой транзакции и выполняем обработчик.
 	tx, ok := ctx.Value(TxKey).(pgx.Tx)
 	if ok {
