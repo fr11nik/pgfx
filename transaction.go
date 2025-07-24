@@ -15,8 +15,6 @@ type Manager struct {
 	db Transactor
 }
 
-type Handler func(ctx context.Context) error
-
 // NewTransactionManager создает новый менеджер транзакций, который удовлетворяет интерфейсу db.TxManager
 func newTransactionManager(db Transactor) *Manager {
 	return &Manager{
@@ -76,7 +74,7 @@ func (m *Manager) transaction(ctx context.Context, opts pgx.TxOptions, fn Handle
 	return err
 }
 
-func (m *Manager) ReadCommitted(ctx context.Context, f Handler) error {
+func (m *Manager) ReadCommitted(ctx context.Context, f func(ctx context.Context) error) error {
 	txOpts := pgx.TxOptions{IsoLevel: pgx.ReadCommitted}
 	return m.transaction(ctx, txOpts, f)
 }
