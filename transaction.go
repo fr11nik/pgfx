@@ -11,26 +11,21 @@ type Transactor interface {
 	BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
 }
 
-type manager struct {
+type Manager struct {
 	db Transactor
 }
 
 type Handler func(ctx context.Context) error
 
-// TxManager удовлетворяет интерфейсу TxManager
-type TxManager interface {
-	ReadCommitted(ctx context.Context, f Handler) error
-}
-
 // NewTransactionManager создает новый менеджер транзакций, который удовлетворяет интерфейсу db.TxManager
-func newTransactionManager(db Transactor) TxManager {
-	return &manager{
+func newTransactionManager(db Transactor) *Manager {
+	return &Manager{
 		db: db,
 	}
 }
 
 // transaction основная функция, которая выполняет указанный пользователем обработчик в транзакции
-func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn Handler) (err error) {
+func (m *Manager) transaction(ctx context.Context, opts pgx.TxOptions, fn Handler) (err error) {
 	// Если это вложенная транзакция, пропускаем инициацию новой транзакции и выполняем обработчик.
 	tx, ok := ctx.Value(TxKey).(pgx.Tx)
 	if ok {
@@ -81,7 +76,7 @@ func (m *manager) transaction(ctx context.Context, opts pgx.TxOptions, fn Handle
 	return err
 }
 
-func (m *manager) ReadCommitted(ctx context.Context, f Handler) error {
+func (m *Manager) ReadCommitted(ctx context.Context, f Handler) error {
 	txOpts := pgx.TxOptions{IsoLevel: pgx.ReadCommitted}
 	return m.transaction(ctx, txOpts, f)
 }

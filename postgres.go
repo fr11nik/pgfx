@@ -113,7 +113,7 @@ func New(connStr string, opts ...Option) (*Postgres, error) {
 	return pg, nil
 }
 
-// NewTransactionManager создаёт новый менеджер транзакций (TxManager),
+// NewTransactionManager создаёт новый менеджер транзакций (Manager),
 // который использует TransactionalPool из текущего экземпляра Postgres.
 //
 // TxManager позволяет легко запускать транзакции, в том числе вложенные (с savepoint),
@@ -132,7 +132,7 @@ func New(connStr string, opts ...Option) (*Postgres, error) {
 //
 // Важно: для выполнения запросов внутри транзакций следует использовать pg.TransactionalPool,
 // а не pg.Pool напрямую.
-func (p *Postgres) NewTransactionManager() TxManager {
+func (p *Postgres) NewTransactionManager() *Manager {
 	return newTransactionManager(p.TransactionalPool)
 }
 
